@@ -1,0 +1,157 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r date, echo=FALSE}
+
+date_today <- Sys.Date()
+```
+
+---
+title: "Statistical Inference Project-Part 2"
+author: "Shovit Bhari"
+date: `r date_today`
+output: html_document
+---
+
+
+# Introduction
+
+This project anlyzes the "ToothGrowth" dataset which is included in R. The effect of Vitamin C in the length of odontoblasts(cells responsible for tooth growth)  is observed in 60 guinea pigs.Each animal received one of three dose level of vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, orange juice(OJ) or ascorbic acid (VC). The measurement is done on 10 guinea pigs. 
+
+[Data description](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/ToothGrowth.html)
+
+
+## Load Data
+Load the libraries required
+```{r setup, message=FALSE, warning=FALSE, echo=TRUE}
+library(ggplot2)
+library(gridExtra)
+library(knitr)
+library(datasets)
+knitr::opts_chunk$set(echo = TRUE, results = 'hold')
+```
+
+Load the data  from the data set
+```{r}
+data(ToothGrowth)
+```
+
+```{r}
+str(ToothGrowth)
+```
+
+Sumamry of the dataset
+```{r}
+summary(ToothGrowth)
+```
+\newpage
+Summary of data within each combination of dose level and delivery method.
+```{r}
+by(ToothGrowth$len, INDICES = list(ToothGrowth$supp, ToothGrowth$dose), summary)
+```
+
+```{r }
+table(ToothGrowth$dose, ToothGrowth$supp)
+```
+
+
+# Exploratory Analysis
+
+1. Scatterplot comparision between tooth length and vitamin C dose.
+2. Scatterplot comparision between tooth length and delivery method.
+
+```{r scatter}
+g1<- ggplot(aes(x=dose, y = len), data = ToothGrowth) + 
+        geom_point(aes(color = supp)) +
+        ggtitle("Growth of tooth length by Dose Amount") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        xlab("Dose Amount(mg)") +
+        ylab("Tooth Length")
+g2<- ggplot(aes(x=supp, y = len), data = ToothGrowth) + 
+        geom_point(aes(color = dose)) +
+        ggtitle("Growth of tooth length by Delivery Method") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        xlab("Delivery Method") +
+        ylab("Tooth Length")
+grid.arrange(g1, g2, nrow=2)
+```
+
+1. Boxplot comparision between vitamin C dose level with each type of delivery methods.
+2. Boxplot comparision between delivery methods at each dose level.
+
+```{r boxplot}
+
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+g3<- ggplot(ToothGrowth, aes(x=dose, y=len)) + 
+        geom_boxplot(aes(fill=dose)) + facet_grid(~supp) +
+        ggtitle("Tooth Length vs. Dose Amount \nby Delivery Method") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        xlab("Dose Amount (mg)") +
+        ylab("Tooth Length")
+
+g4<-ggplot(aes(x = supp, y = len), data = ToothGrowth) +
+        geom_boxplot(aes(fill = supp)) + facet_wrap(~ dose) +
+        ggtitle("Tooth Length vs. Delivery Method \nby Dose") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        xlab("Supplement Delivery") +
+        ylab("Tooth Length")
+grid.arrange(g3, g4, ncol=2)
+```
+
+
+# Hypothesis tests
+
+**H0 : The delivery mode of Vitamin C does not have any influence on the tooth growth**   
+
+## Supplement as a Factor
+
+Analyzing the data for comparision between the delivery method and change in tooth growth.
+```{r dist, message=FALSE}
+t.test(len ~ supp, paired = F, var.equal = F, data = ToothGrowth)
+```
+
+The p-value of this test was 0.06.
+Since the p-value is greater than 0.05 and the confidence interval of the test contains zero we can say that supplement types seems to have no impact on Tooth growth based on this test.
+A confidence interval of [-0.171, 7.571] does not allow us to reject the null hypothesis and there is no correlation between delivery method and tooth length.
+
+\newpage
+
+## Dosage as a factor
+
+Analyzing the data for correlation between the dose level and change in tooth growth:
+
+1. Dose amounts 0.5 mg and 1.0 mg
+```{r}
+
+dose1 <- subset(ToothGrowth, dose %in% c(0.5, 1.0))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose1)
+
+```
+
+2. Dose amounts 0.5 mg and 2.0 mg
+```{r}
+
+dose2 <- subset(ToothGrowth, dose %in% c(0.5, 2.0))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose2)
+
+```
+
+3. Dose amounts 1.0 mg and 2.0 mg
+```{r}
+
+dose3 <- subset(ToothGrowth, dose %in% c(1.0, 2.0))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose3)
+```
+
+From the results above, the p-value of each test was less than 0.05 (approximately equal to zero) and the confidence interval of each test does not cross over 0. The confidence intervals are as following.  [-11.98, -6.276] for doses 0.5 mg and 1.0 mg, [-18.16, -12.83] for doses 0.5 mg and 2.0 mg, and [-8.996, -3.734] for doses 1.0 mg  and 2.0 mg. Based on these results we can assume that the average tooth length increases with increasing dose. Therefore the null hypothesis can be rejected.
+
+# Conclusion
+
+Carefully analyzing the t-test analysis, the supplement delivery method has no effect on tooth growth(length of odontoblasts). However, the increment of dosage results in the increased tooth length. 
+
+
+

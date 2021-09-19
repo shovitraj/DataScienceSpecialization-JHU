@@ -1,0 +1,238 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r date, echo=FALSE}
+today <- Sys.Date()
+today<- format(today, format="%B %d %Y")
+```
+
+---
+title: "Regression Model: Course Project"
+author: "Shovit Bhari"
+date: `r today`
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Executive Summary
+
+This report is a course assignment of the Regression Models course on the Data Science Specialization by Johns Hopkins University on Coursera.
+
+We estimate the relationship between **am** variable (type of transmission(automatic or manual)) and other independant variables, such as weight (**wt**), gross horsepower(**hp**), number of cylinders(**cyl**), and miles per gallon (**mpg**) variable is an outcome. 
+
+We are particularly interested in the following two questions:
+
+* Is an automatic or manual transmission better for **MPG**?
+* Quantify the **MPG** difference between automatic and manual transmissions?
+
+Our observatin from the analysis: 
+
+* Manual transmission is better for **MPG** by a factor of **1.8** compared to automatic transmission. 
+* Mean and medians of automatic and manual transmissions are significantly different.  
+
+
+## Data Description
+We analyze the ‘mtcars’ data set through Regression Modelling and exploratory analysis to show how automatic (am = 0) and manual (am = 1) transmissions features affect the MPG feature. The dataset “mtcars” is located in the package “datasets”.
+
+The data set consists of 32 observations and 11 variables which are as following:
+
+### Data processing
+
+Set up the environment using the following code chunk
+```{r , warning=FALSE, message=FALSE}
+library(datasets);library(ggplot2);library(GGally);library(knitr);library(dplyr)
+```
+### Data Preparation
+Load the data and check the number of observations and variables. 
+
+```{r}
+data(mtcars); dim(mtcars)
+```
+
+```{r echo=FALSE, results='hide'}
+str(mtcars)
+names(mtcars)
+```
+Transform necessay data into factors. 
+```{r}
+mtcars$cyl  <- factor(mtcars$cyl)
+mtcars$vs   <- factor(mtcars$vs)
+mtcars$gear <- factor(mtcars$gear)
+mtcars$carb <- factor(mtcars$carb)
+mtcars$am   <- factor(mtcars$am,labels=c("Automatic","Manual"))
+```
+
+
+```{r ,echo=FALSE, results='hide'}
+table(mtcars$am)
+aggregate(mpg~am, mtcars, mean)
+```
+
+## Exploratory Data Analysis
+
+We explored the relationships between variables of interest. 
+First, we plotted (Figure 1 in the Appendix I) the relationsips between all the variables of the dataset. Pairs plot, reflected that variables such as **cyl,disp,hp,wt**, and **am** have strong correlation with mpg. We plotted another pair plot with corrleation (Figure 2 in the Appendix I) with **cyl,disp,hp,wt**, and **am** variables. However, our main interest is effect of car transmission type with mpg, so we plotted boxplots of mpg with respect to transimmsion type (automtic or manual, Figure 3  in the Appendix I)
+
+### Regression Analysis
+We built models based on different variables and tried to find the best model fit and compared it to the base model. 
+
+#### Base Model(Model1): mpg vs. am
+
+```{r model1}
+model1 <- lm(mpg~am, data=mtcars)
+summary(model1)
+
+```
+
+#### Model2: mpg vs. am and cyl
+```{r model2}
+model2 <- lm(mpg~ am + cyl  , data=mtcars)
+summary(model2)$r.squared
+```
+
+#### Model3: mpg vs. am,cyl, and wt
+```{r model3}
+model3 <- lm(mpg~ am + cyl + wt , data=mtcars)
+summary(model3)$r.squared
+```
+#### Model4: mpg vs. am,cyl, wt, and hp
+```{r model4}
+model4 <- lm(mpg~ am + cyl + wt + hp , data=mtcars)
+summary(model4)
+```
+After careful observation of four models, the adjusted $R^2$ for model 4 is approximately **0.87** which is the maximum compared to other models. This concluded that more than 87% of the variability is explained by model4. 
+
+We analyzed one way variance for different models with **anova** function. However, **anova** for model1 and model4 is shown below.
+
+
+```{r, echo=FALSE, results='hide'}
+anova(model1, model2)
+```
+
+```{r,echo=FALSE, results='hide'}
+anova(model1, model3)
+```
+
+```{r}
+anova(model1, model4)
+```
+While comparing model1 and model4 **p-value** is significant. Thus, we reject the null hypothesis that the variables, **cyl**, **hp**, and **wt**, do not contribute to the accuracy of the model. 
+
+
+## Residual and Diagnostics
+We examined the residual plot of our best model and computed some of the regression diagnostics of our model to find outliers in the data set. 
+
+From the residual plot in Appendix II, we can make the following observations,
+
+* The points in the Residuals vs. Fitted plot seem to be randomly scattered on the plot and verify the independence condition.
+* The Normal Q-Q plot consists of the points which mostly fall on the line indicating that the residuals are normally distributed.
+* The Scale-Location plot consists of points scattered in a constant band pattern, indicating constant variance.
+* There are some distinct points of interest (outliers or leverage points) in the top right of the plots.
+
+We computed some regression diagnostics of our model to find out these leverage points. We computed top three points in each case of influence measures.
+
+```{r lev}
+lev <- hatvalues(model4)
+tail(sort(lev),3)
+```
+```{r inf}
+inf <- dfbetas(model4)
+tail(sort(inf[,2]),3)
+```
+## Inference
+
+We perfomed a **t.test** with the assumtion that the transmission data has a normal distribution. As per the result, the manual and the automatic transmissions are significantly different. 
+
+```{r}
+t.test(mpg~am, data=mtcars)
+```
+
+## Conclusion
+After carefully analyzing the data, here's our observation from the best fit model.
+
+
+* Cars with the **manual** transmission gets more mileage than the **automatic** transmission which is by the factor of **1.8**. 
+* **mpg** will decrease by **2.5** for every **1000 lb** increase in wt. 
+* Decrease in **mpg** is negligible with increaseof **hp**
+* When the number of cylinders (**cyl**) increases from **4** to **6** and **8**, **mpg** will decrease by the factor of **3** and **2.2**.
+
+## Appendix I:
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+g2 <- ggpairs(mtcars, 
+             title="Figure 1: Pairs plot of mtcars data set")
+             
+g2
+```
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+g2 <- ggpairs(mtcars, 
+             columns = c(1,2,4,6,9),
+             title="Figure 2: Pairs plot of selected variables in mtcars data set")
+             
+g2
+```
+
+```{r, echo=FALSE,results='hide'}
+g3 <-ggplot(aes(x=am, y=mpg), data=mtcars) + 
+    geom_boxplot(aes(fill=am))+
+    labs(x="Transmission Type", y="MPG", title="Mileage by Transmission", caption="Figure 3: Mileage by Transmission")+
+    theme(plot.title = element_text(hjust = 0.5)) +
+    scale_x_discrete(labels=c("Automatic","Manual")) +
+    scale_fill_discrete(name="Transmission",labels=c("Automatic", "Manual")) +
+    theme(plot.title = element_text(color="blue", size=16, face="bold"))
+g3
+```
+
+
+```{r, echo=FALSE, results='hide'}
+g4 <-ggplot(aes(x=cyl, y=mpg), data=mtcars) + 
+        geom_boxplot(aes(fill=cyl))+
+        labs(x="Number for Cylinders", y="MPG", title="Mileage by Cylinder", caption="Figure : Mileage by Cylinder")+
+        theme(plot.title = element_text(hjust = 0.5)) +
+        scale_x_discrete(labels=c(4,6,8)) +
+        scale_fill_discrete(name="Cylinders",labels=c(4,6,8)) +
+        theme(plot.title = element_text(color="blue", size=16, face="bold"))
+
+```
+
+
+
+
+```{r, echo=FALSE, results='hide'}
+g5 <-ggplot(aes(x=wt, y=mpg), data=mtcars) + 
+        geom_point(size=2, shape=23)+
+        labs(x="Weight", y="MPG", title="Mileage by Weight", caption="Figure : Mileage by Weight")+
+        theme(plot.title = element_text(hjust = 0.5)) +
+        scale_x_discrete(labels=c(4,6,8)) +
+        scale_fill_discrete(name="Cylinders",labels=c(4,6,8)) +
+        theme(plot.title = element_text(color="blue", size=16, face="bold"))
+
+```
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+g6 <-ggplot(aes(x=hp, y=mpg, color=cyl), data=mtcars) + 
+        geom_point(size=3)+
+        geom_smooth(method="lm", aes(fill=cyl))+
+        facet_wrap(~cyl)+
+        labs(x="Horsepower", y="MPG", title="Mileage by horsepower in different types of cylinders", caption="Figure 4: Mileage by horsepower in different types of cylinders")+
+        theme(plot.title = element_text(hjust = 0.5)) +
+        theme(plot.title = element_text(color="blue", size=16, face="bold"))
+
+```
+
+## Appendix II
+
+#### Residual plots
+```{r, echo=FALSE}
+par(mfrow=c(2,2))
+plot(model4)
+```
+
+
+

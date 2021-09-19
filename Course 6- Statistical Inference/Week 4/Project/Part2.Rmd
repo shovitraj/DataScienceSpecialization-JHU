@@ -1,0 +1,140 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r date, echo=FALSE}
+
+date_today <- Sys.Date()
+```
+
+---
+title: "Statistical Inference Project-Part 2"
+author: "Shovit Bhari"
+date: `r date_today`
+output: html_document
+---
+
+
+# Introduction
+
+
+This project aanlyzes the "ToothGrowth" dataset which is included in R. The effect of Vitamin C in the length od odontoblasts(cells responsible for tooth growth)  is observed in 60 guinea pigs.Each animal received one of three dose level of vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, orange juice(OJ) or ascorbic acid (VC). The measurement is done on 10 guinea pigs. 
+ [Summary](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/ToothGrowth.html)
+
+
+## Load Data
+Load the libraries required
+```{r setup, message=FALSE, warning=FALSE, echo=TRUE}
+library(ggplot2)
+library(gridExtra)
+library(knitr)
+library(datasets)
+knitr::opts_chunk$set(echo = TRUE, results = 'hold')
+```
+
+Load the data and check the summary.
+```{r}
+data(ToothGrowth)
+```
+
+```{r}
+summary(ToothGrowth)
+```
+
+```{r}
+head(ToothGrowth)
+```
+
+```{r}
+# split of cases between different dose levels and delivery methods
+table(ToothGrowth$dose, ToothGrowth$supp)
+```
+
+
+#```{r, echo=FALSE}
+#by(ToothGrowth$len, INDICES = list(ToothGrowth$supp, ToothGrowth$dose), length)
+#```
+
+```{r}
+#Summary of data within each combination of dose level and delivery method:
+by(ToothGrowth$len, INDICES = list(ToothGrowth$supp, ToothGrowth$dose), summary)
+```
+```{r}
+unique(ToothGrowth$supp)
+
+```
+```{r}
+unique(ToothGrowth$dose)
+```
+
+```{r}
+unique(ToothGrowth$len)
+
+```
+
+Scatterplot comparision between tooth length and Vitamin C dose:
+
+```{r}
+g1<- ggplot(aes(x=dose, y = len), data = ToothGrowth) + 
+        geom_point(aes(color = supp)) +
+        ggtitle("Dispersion of tooth growth by dose") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        xlab("dose in mg") +
+        ylab("tooth length")
+g2<- ggplot(aes(x=supp, y = len), data = ToothGrowth) + 
+        geom_point(aes(color = dose)) +
+        ggtitle("Dispersion of tooth growth by delivery method") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        xlab("supp") +
+        ylab("tooth length")
+grid.arrange(g1, g2, nrow=2)
+```
+
+```{r}
+#Boxplot comparision between Vitamin C dose level and tooth length:
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+g3<- ggplot(ToothGrowth, aes(x=dose, y=len)) + 
+        geom_boxplot(aes(fill=dose)) + facet_grid(~supp) +
+        ggtitle("Tooth Length vs. Dose Amount \nby Delivery Method") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        xlab("Dose Amount (mg)") +
+        ylab("Tooth Length")
+#Boxplot comparision between delivery methods at each dose level:
+g4<-ggplot(aes(x = supp, y = len), data = ToothGrowth) +
+        geom_boxplot(aes(fill = supp)) + facet_wrap(~ dose) +
+        ggtitle("Tooth Length vs. Delivery Method by Dose Amount") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        xlab("Supplement Delivery") +
+        ylab("Tooth Length")
+grid.arrange(g3, g4, ncol=2)
+```
+
+
+
+
+Comparing tooth growth by supplement using t-test. 
+```{r dist, message=FALSE}
+t.test(len ~ supp, paired = F, var.equal = F, data = ToothGrowth)
+```
+
+Comparing tooth growth by dose, looking at the different pairs do dose values
+```{r}
+#dose amounts 0.5 and 1.0
+dose1 <- subset(ToothGrowth, dose %in% c(0.5, 1.0))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose1)
+
+```
+```{r}
+#dose amounts 0.5 and 2.0
+dose2 <- subset(ToothGrowth, dose %in% c(0.5, 2.0))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose2)
+
+```
+```{r}
+#dose amounts 1.0 and 2.0
+dose3 <- subset(ToothGrowth, dose %in% c(1.0, 2.0))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose3)
+```
