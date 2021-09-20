@@ -1,0 +1,109 @@
+---
+title: "Untitled"
+author: "Shovit Bhari"
+date: "7/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# load required packages
+require(tm)
+require(stringi)
+require(data.table)
+require(quanteda)
+require(ggplot2)
+require(wordcloud)
+```
+
+# Loading data
+```{r}
+# read files
+blogs <- readLines("Data/final/en_US/en_US.blogs.txt", encoding = "UTF-8", skipNul = TRUE)
+news <- readLines("Data/final/en_US/en_US.news.txt", encoding = "UTF-8", skipNul = TRUE)
+twitt <- readLines("Data/final/en_US/en_US.twitter.txt", encoding = "UTF-8", skipNul = TRUE)
+
+# Get file sizes
+blogs.size <- file.size("Data/final/en_US/en_US.blogs.txt")/1024/1024
+news.size <- file.size("Data/final/en_US/en_US.news.txt")/1024/1024
+twitt.size <- file.size("Data/final/en_US/en_US.twitter.txt")/1024/1024
+
+# count words
+blogs.words <- stri_count_words(blogs)
+news.words <- stri_count_words(news)
+twitt.words <- stri_count_words(twitt)
+
+# summary
+data.summary <- data.table(
+        item = c("blogs", "news", "twitt"),
+        size.Mb = c(blogs.size, news.size, twitt.size),
+        lines = c(length(blogs.words), length(news.words), length(twitt.words)),
+        words = c(sum(blogs.words), sum(news.words), sum(twitt.words)),
+        mean.words = c(mean(blogs.words), mean(news.words), mean(twitt.words)),
+        median.words = c(median(blogs.words), median(news.words), median(twitt.words)),
+        max.words = c(max(blogs.words), max(news.words), max(twitt.words))
+        )
+data.summary
+```
+
+# Exploring the data
+```{r}
+# create a corpus using a 1% sample of the data
+set.seed(37)
+data.01 <- c(sample(blogs, length(blogs) * 0.01),
+             sample(news, length(news) * 0.01),
+             sample(twitt, length(twitt) * 0.01))
+
+# remove original objects to free up memory
+rm(blogs)
+rm(news)
+rm(twitt)
+
+# exploring the data
+q.corpus <- quanteda::corpus(data.01)
+```
+
+```{r}
+# get N-grams using quanteda::dfm
+dfm.1gram <- dfm(q.corpus, removePunct = TRUE, concatenator = " ")
+dfm.2gram <- dfm(q.corpus, removePunct = TRUE,  concatenator = " ", ngrams = 2)
+dfm.3gram <- dfm(q.corpus, removePunct = TRUE,  concatenator = " ", ngrams = 3)
+```
+
+
+```{r}
+# plot a word-cloud of the unigram (1-gram)
+textplot_wordcloud(dfm.1gram, max.words = 100, random.order = FALSE,
+                   rot.per =.2, scale = c(8, 1),
+                   colors = RColorBrewer::brewer.pal(8,"Dark2"))
+```
+
+
+
+```{r}
+# get most common N-grams (ranked values)
+top.1gram <- topfeatures(dfm.1gram, 20)
+top.2gram <- topfeatures(dfm.2gram, 20)
+top.3gram <- topfeatures(dfm.3gram, 20)
+
+# top.1gram
+# top.2gram
+# top.3gram
+
+# plot
+barplot(sort(top.1gram), xlab = "count", main = "top-20 1-gram", cex.names = 0.7, horiz=TRUE, las =1)
+```
+
+
+```{r}
+barplot(sort(top.2gram), xlab = "count", main = "top-20 2-gram", cex.names = 0.7, horiz=TRUE, las =1)
+```
+
+
+```{r}
+barplot(sort(top.3gram), xlab = "count", main = "top-20 3-gram", cex.names = 0.7, 
+        horiz=TRUE, las =1, mgp = c(3, 0, 1))
+```

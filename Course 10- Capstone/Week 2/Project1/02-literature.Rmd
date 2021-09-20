@@ -1,0 +1,75 @@
+
+# Exploratory Data Analysis
+
+## Unigram Analysis
+
+Plotting the top ten Unigram frequency.
+```{r}
+
+topUniVector <- topfeatures(unigram, 10)
+topUniVector <- sort(topUniVector, decreasing = FALSE)
+topUniDf <- data.frame(words = names(topUniVector), freq = topUniVector)
+topUniPlot <- ggplot(data = topUniDf, aes(x = reorder(words, freq), y = freq, fill = freq)) + 
+        geom_bar(stat = "identity") +
+        theme_minimal() +
+        labs(x = "Unigram", y = "Frequency") +
+        labs(title = "Ten most common Unigrams") +
+        theme(plot.title = element_text(hjust = 0.5))+ 
+        coord_flip() +
+        guides(fill=FALSE) 
+g1<- ggplotly(topUniPlot)
+g1
+```
+
+## Bigram Analysis
+Plotting the top ten Bigram frequency.
+```{r}
+
+topBiVector <- topfeatures(bigram, 10)
+topBiVector <- sort(topBiVector, decreasing = FALSE)
+topBiDf <- data.frame(words = names(topBiVector), freq = topBiVector)
+topBiPlot <- ggplot(data = topBiDf, aes(x = reorder(words, freq), y = freq, fill = freq)) + 
+        geom_bar(stat = "identity") +
+        theme_minimal() +
+        labs(x = "Bigram", y = "Frequency") +
+        labs(title = "Ten most common Bigrams") +
+        theme(plot.title = element_text(hjust = 0.5)) +
+        coord_flip() +
+        guides(fill=FALSE) 
+g2<- ggplotly(topBiPlot)
+g2
+```
+
+## Trigram Analysis
+
+Plotting the top ten Trigram frequency.
+```{r}
+
+topTriVector <- topfeatures(trigram, 10)
+topTriVector <- sort(topTriVector, decreasing = FALSE)
+topTriDf <- data.frame(words = names(topTriVector), freq = topTriVector)
+topTriPlot <- ggplot(data = topTriDf, aes(x = reorder(words, freq), y = freq, fill = freq)) + 
+        geom_bar(stat = "identity") +
+        theme_minimal() +
+        labs(x = "Trigram", y = "Frequency") +
+        labs(title = "Ten most common Trigrams") +
+        theme(plot.title = element_text(hjust = 0.5)) +
+        coord_flip() +
+        guides(fill=FALSE) 
+g3<- ggplotly(topTriPlot)
+g3
+```
+
+
+# Plans for prediction algorithm and Shiny App
+
+The final part of this capstone project is to build a predictive algorithm that will be deployed as a Shiny app for the user interface in the web browser. In Shiny app will take multiple words input in a text box and output a prediction of the next word. 
+
+The predictive algorithm will be created using an n-gram model with a frequency lookup to that performed in the exploratory data analysis section of this report.Based on the exploratory analysis here are the plans:
+
+* Increase the number of n-grams, possibly upto 5 or 6.  
+* Create a model, first to look for the unigram from the entered text.   
+* Once the text is entered, find the most common bigram model and increase the n-grams.   
+* Increase or decrease the percentage of training data for efficiency and accuracy. 
+* Efficiency and accuracy will be a deciding factor or the final strategy.    
+* The design for the Shiny App is to be decided. 

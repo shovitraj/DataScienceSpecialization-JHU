@@ -1,0 +1,235 @@
+---
+title: "Assignment 1"
+author: "Shovit Bhari"
+date: "7/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Introduction:
+
+This is a milestone report which is a part of the Capstone Project in the Data Science Specialization offered by Johns Hopking University in Coursera.org. The main objective of this report is to develop an understanding of statistical properties of the data set which can be applied to Natural Language Processing [(NLP)](https://en.wikipedia.org/wiki/Natural_language_processing) in order to build a predictive text application. This application will guage text as it is typed by the user an suggest the next possible word to be appended to the input stream. The final product will be used in a Shiny application platform, which will allow the users to type an input text and suggest the next text prediction in a web based environment.  
+
+
+The text data can be downloaded [here](https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip) and is provided in four different languages. We will be using the English corpora. 
+The model will be trained using a document corpus compiled from the follwing three sources of text data:
+* Blogs
+* Twitter
+* News
+
+# Load packages and data
+## Load packages
+```{r, message=FALSE, warning=FALSE}
+library(R.utils)
+library(stringi)
+library(quanteda)
+library(ggplot2)
+library(tidytext)
+library(ngram)
+library(plotly)
+```
+
+## Load Data
+Download, unzip, and load the data
+```{r}
+rm(list=ls())
+if(!file.exists("~/Desktop/Data")){
+  dir.create("~/Desktop/Data")
+}
+url <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
+filedest= "~/Desktop/Data/Coursera-SwiftKey.zip"
+if(!file.exists("~/Desktop/Data/Coursera-SwiftKey.zip")){
+  download.file(url,filedest, mode = "wb")
+}
+
+if(!file.exists("~/Desktop/Data/final")){
+  unzip(zipfile="~/Desktop/Data/Coursera-SwiftKey.zip",exdir="~/Desktop/Data")
+}
+
+
+```
+
+
+# Data Processing
+
+## Read file size
+For convenience file path is set and file size obtained to gauge the file size for all three different dataset. File size is converted to Megabytes. 
+```{r}
+
+blogs_path <- "./Data/final/en_US/en_US.blogs.txt"
+twitter_path <- "./Data/final/en_US/en_US.twitter.txt"
+news_path <- "./Data/final/en_US/en_US.news.txt"
+
+
+sb <- file.info(blogs_path)$size/1024^2
+st <- file.info(twitter_path)$size/1024^2
+sn <- file.info(news_path)$size/1024^2
+
+sb
+```
+
+
+## Count lines and words
+Lines are read from each dataset and number of lines and words are counted. 
+
+```{r}
+#read lines
+blogs<-readLines(blogs_path,warn=FALSE,encoding="UTF-8")
+twitter<-readLines(twitter_path,warn=FALSE,encoding="UTF-8")
+news<-readLines(news_path,warn=FALSE,encoding="UTF-8")
+
+# count words per line
+nwlblogs <- stri_count_words(blogs)
+nwltwitter <- stri_count_words(twitter)
+nwlnews<- stri_count_words(news)
+
+#count number of words
+nwblogs  <- wordcount(blogs, sep = " ")
+nwtwitter <- wordcount(twitter, sep = " ")
+nwnews  <- wordcount(news, sep = " ")
+
+#count number of lines
+nlblogs <- countLines(blogs_path)
+nltwitter <- countLines(twitter_path)
+nlnews <- countLines(news_path)
+
+```
+
+## Data Summary
+Summary of data is created
+```{r}
+# summary
+data <- data.frame(
+        Items = c("Blogs", "Twitter", "News"),
+        FileName=c("en_US.blogs.txt","en_US.twitter.txt", "en_US.news.txt "),
+        Size_MB = c(sb, st, sn),
+        Words = c(nwblogs, nwtwitter, nwnews),
+        Lines = c(nlblogs, nltwitter, nlnews),
+        Mean.Words.PerLine = c(mean(nwlblogs), mean(nwltwitter), mean(nwlnews)),
+        median.words.PerLine = c(median(nwlblogs), median(nwltwitter), median(nwlnews))
+        
+        )
+
+
+data
+
+```
+
+## Ratio of number of words vs line 
+```{r}
+ratio = data.frame(ratio=c(nwblogs/nlblogs, nwtwitter/nltwitter, nwnews/nlnews), media=as.factor(c("Blogs", "Twitter", "News")))
+ratio
+ggplot(data = ratio, aes(x=media, y= ratio, fill =media)) + geom_bar(stat="identity") + ggtitle("label") + ylab("ratio of words/ lines")
+
+```
+
+## Sample Data
+The three data sets will be sampled at 10% to improve performance. All non english characters are removed from the subset of the data and then combined into a single data set for a corpus sample. 
+```{r}
+set.seed(165)
+#selecting ten percent of the data
+samplesize <- 0.1 
+blogsSample <- blogs[sample(1:length(blogs), length(blogs) * samplesize)]
+twitterSample <- twitter[sample(1:length(twitter), length(twitter) * samplesize)]
+newsSample <- news[sample(1:length(news), length(news) * samplesize)]
+
+# remove all non-English characters from the sampled data
+blogsSample <- iconv(blogsSample, "latin1", "ASCII", sub = "")
+newsSample  <- iconv(newsSample , "latin1", "ASCII", sub = "")
+twitterSample <- iconv(twitterSample, "latin1", "ASCII", sub = "")
+corpusSample <- c(blogsSample, twitterSample, newsSample)
+
+```
+
+# Data Cleaning (Profanity)
+A list of more than 1,300 bad words obtained from the [School of Computer Science, Carnegie Mellon University](https://www.cs.cmu.edu/~biglou/resources/bad-words.txt)
+```{r}
+if(!file.exists("./swearWords.txt")){
+        download.file(url = "https://www.cs.cmu.edu/~biglou/resources/bad-words.txt",
+                      destfile= "./swearWords.txt",
+                      method = "curl")
+}
+profanity <- scan("./swearWords.txt", what = "character", sep = "\n", encoding = "UTF-8")
+```
+
+# Tokenization and N-Gram Generation
+
+The following transformations is made in the sample corpus data set. 
+* Remove numbers
+* Remove punctuation marks
+* Remove URL
+* Remove separators
+* Remove symbols
+* Remove Twitter handles
+
+
+
+
+```{r, message=FALSE, warning=FALSE}
+# Build tokens following n-grams model using "quanteda" package
+tokensAll <- tokens(corpusSample,
+               what="word",
+               remove_numbers = TRUE,
+               remove_punct = TRUE,
+               remove_url =TRUE,
+               remove_separators = TRUE,
+               remove_symbols = TRUE,
+               remove_twitter = TRUE,
+               verbose = TRUE)
+tokensNoStopwords <- tokens_replace(tokensAll,pattern =stopwords("english"),replacement=stopwords("english")) # Remove stopwords before constructing dfm matrix for each n-grams
+tokensToLower <- tokens_tolower(tokensNoStopwords) # Set lower case for every word. "toLower" function cannot be included in the previous "tokenize" function. I do not know why
+tokensStem <- tokens_wordstem(tokensToLower, language = "english") # Apply stemmer to words. Idem
+tokensUnigram <- tokens_ngrams(tokensStem, n = 1, concatenator = " ")
+tokensBigram <- tokens_ngrams(tokensStem, n = 2, concatenator = " ")
+tokensTrigram <- tokens_ngrams(tokensStem, n = 3, concatenator = " ")
+```
+# Build document-feature matrices
+The predictive model for the Shiny application will handle uniqrams, bigrams, and trigrams. The `quanteda` package is used to construct functions construct matrices of uniqrams, bigrams, and trigrams from the tokenized data. 
+```{r}
+unigram <- dfm(tokensUnigram, verbose = FALSE,remove = profanity )
+bigram <- dfm(tokensBigram, verbose = FALSE, remove = profanity)
+trigram <- dfm(tokensTrigram, verbose = FALSE, remove = profanity)
+```
+
+#Exploratory Analysis
+
+```{r}
+# Unigram frequency plot
+topUnigramVector <- topfeatures(unigram, 20)
+topUnigramVector <- sort(topUnigramVector, decreasing = FALSE)
+topUnigramDf <- data.frame(words = names(topUnigramVector), freq = topUnigramVector)
+topUnigramPlot <- ggplot(data = topUnigramDf, aes(x = reorder(words, freq), y = freq, fill = freq)) + 
+        geom_bar(stat = "identity") +
+        theme_minimal() +
+        labs(x = "Unigram", y = "Frequency") +
+        labs(title = expression("Unigrams Frequencies")) +
+        coord_flip() +
+        guides(fill=FALSE) 
+plot(topUnigramPlot)
+```
+
+
+```{r}
+# Unigram frequency plot
+topBigramVector <- topfeatures(bigram, 20)
+topBigramVector <- sort(topBigramVector, decreasing = FALSE)
+topBigramDf <- data.frame(words = names(topBigramVector), freq = topBigramVector)
+topBigramPlot <- ggplot(data = topBigramDf, aes(x = reorder(words, freq), y = freq, fill = freq)) + 
+        geom_bar(stat = "identity") +
+        theme_minimal() +
+        labs(x = "Bigram", y = "Frequency") +
+        labs(title = expression("Bigram Frequencies")) +
+        coord_flip() +
+        guides(fill=FALSE) 
+plot(topBigramPlot)
+```
+
+# Creating a prediction algorithm and Shiny App
+
+While the strategy for modeling and prediction has not been finalized, the n-gram model with a frequency look-up table might be used based on the analysis above. A possible method of prediction is to use the 4-gram model to find the most likely next word first. If none is found, then the 3-gram model is used, and so forth. Furthermore, stemming might also be done in data preprocessing.
+
+For the Shiny app, the plan is to create an app with a simple interface where the user can enter a string of text. Our prediction model will then give a list of suggested words to update the next word.

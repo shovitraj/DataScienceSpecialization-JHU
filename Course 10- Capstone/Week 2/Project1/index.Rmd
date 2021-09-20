@@ -1,0 +1,24 @@
+--- 
+title: "Data Science Capstone: Milestone Report"
+author: "Shovit Bhari"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "This is a milestone report."
+---
+
+# Introduction
+
+This is a milestone report which is a part of the Capstone Project in the Data Science Specialization offered by Johns Hopking University in Coursera.org. The main objective of this report is to develop an understanding of statistical properties of the dataset which can be applied to Natural Language Processing [(NLP)](https://en.wikipedia.org/wiki/Natural_language_processing) in order to build a predictive text application. In this application user will input text, as text is typed by the user, predictive model will recommend the next possible word(s) to be appended to the input stream. The final product will be used in a Shiny application platform, which will allow the users to type an input text and suggestion of the next text prediction in a web based environment.  
+
+
+The text data can be downloaded [here](https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip) and is provided in four different languages. We will be using the English corpora. 
+The model will be trained using a document corpus compiled from the follwing three sources of text data: 
+
+* Blogs    
+* Twitter    
+* News    
+

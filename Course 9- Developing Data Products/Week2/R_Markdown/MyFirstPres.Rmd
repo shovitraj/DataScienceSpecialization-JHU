@@ -1,0 +1,56 @@
+---
+title: "My Fancy Presentation"
+author: "Shovit Bhari"
+date: "6/7/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## My new slide
+some content
+
+***
+A slide without a title   
+
+## My Title
+
+- Bullet 1
+- Bullet 2
+
+
+### Top level subheading
+
+#### Second level subheading
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with Items
+
+1. Item 1
+2. Item 2
+3. Item 3
+
+## Different formats
+
+*Italicized*  
+**Bold**
+
+`for (i %in% 1:10)`
+
+## Slide with R Output with eval=FALSE
+
+
+```{r, comment="", echo=TRUE, eval=FALSE}
+head(mtcars)
+```
+## New Plot
+```{r, echo=FALSE, fig.align='center', fig.cap='My Awesome Plot', fig.height=5}
+plot(mtcars$wt, mtcars$mpg, xlab="Weight", ylab="MPG")
+```

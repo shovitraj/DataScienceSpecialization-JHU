@@ -1,0 +1,77 @@
+```{r}
+today <- Sys.Date()
+```
+
+---
+title: "Leaflet"
+author: 'Shovit Bhari'
+date: `r today`
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+library(leaflet)
+my_map <- leaflet() %>% 
+  addTiles()
+my_map
+```
+
+```{r, echo=FALSE}
+library(leaflet)
+my_map <- my_map %>%
+  addMarkers(lat=33.879766, lng=-117.885584, 
+             popup="McCarthy Hall")%>%
+  addMarkers(lat=33.881760,lng=-117.888599, 
+             popup="Titan Student Union") 
+my_map
+```
+
+## Adding Many Markers
+
+```{r, eval=FALSE}
+set.seed(2020-06-08)
+df <- data.frame(lat = runif(20, min = 33.85, max = 33.89),
+                 lng = runif(20, min = -177.88, max = -117.89))
+df %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers()
+```
+
+# Mapping Clusters
+
+```{r, echo=FALSE}
+df <- data.frame(lat = runif(500, min = 33.85, max = 33.89),
+                 lng = runif(500, min = -177.88, max = -117.89))
+df %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(clusterOptions = markerClusterOptions())
+```
+
+# Mapping Circle Markers
+
+```{r, eval=FALSE}
+df <- data.frame(lat = runif(20, min = 33.85, max = 33.89),
+                 lng = runif(20, min = -177.88, max = -117.89))
+df %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addCircleMarkers()
+```
+
+## Mapping Circle Markers
+
+```{r, echo=FALSE}
+df <- data.frame(lat = runif(20, min = 39.25, max = 39.35),
+                 lng = runif(20, min = -76.65, max = -76.55))
+df %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addCircleMarkers()
+```
+

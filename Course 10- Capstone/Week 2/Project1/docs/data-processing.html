@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title> 3 Data Processing | Data Science Capstone: Milestone Report</title>
+  <meta name="description" content="This is a milestone report." />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content=" 3 Data Processing | Data Science Capstone: Milestone Report" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a milestone report." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content=" 3 Data Processing | Data Science Capstone: Milestone Report" />
+  
+  <meta name="twitter:description" content="This is a milestone report." />
+  
+
+<meta name="author" content="Shovit Bhari" />
+
+
+<meta name="date" content="2020-07-13" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="load-packages-and-data.html"/>
+<link rel="next" href="exploratory-data-analysis.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Assignment 1: Milestone Report</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="load-packages-and-data.html"><a href="load-packages-and-data.html"><i class="fa fa-check"></i><b>2</b> Load packages and data</a><ul>
+<li class="chapter" data-level="2.1" data-path="load-packages-and-data.html"><a href="load-packages-and-data.html#load-packages"><i class="fa fa-check"></i><b>2.1</b> Load packages</a></li>
+<li class="chapter" data-level="2.2" data-path="load-packages-and-data.html"><a href="load-packages-and-data.html#load-data"><i class="fa fa-check"></i><b>2.2</b> Load Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="data-processing.html"><a href="data-processing.html"><i class="fa fa-check"></i><b>3</b> Data Processing</a><ul>
+<li class="chapter" data-level="3.1" data-path="data-processing.html"><a href="data-processing.html#file-size"><i class="fa fa-check"></i><b>3.1</b> File Size</a></li>
+<li class="chapter" data-level="3.2" data-path="data-processing.html"><a href="data-processing.html#count-lines-and-words"><i class="fa fa-check"></i><b>3.2</b> Count lines and words</a></li>
+<li class="chapter" data-level="3.3" data-path="data-processing.html"><a href="data-processing.html#data-summary"><i class="fa fa-check"></i><b>3.3</b> Data Summary</a></li>
+<li class="chapter" data-level="3.4" data-path="data-processing.html"><a href="data-processing.html#ratio"><i class="fa fa-check"></i><b>3.4</b> Ratio</a></li>
+<li class="chapter" data-level="3.5" data-path="data-processing.html"><a href="data-processing.html#prepare-training-data"><i class="fa fa-check"></i><b>3.5</b> Prepare Training Data</a></li>
+<li class="chapter" data-level="3.6" data-path="data-processing.html"><a href="data-processing.html#data-cleaning"><i class="fa fa-check"></i><b>3.6</b> Data Cleaning</a><ul>
+<li class="chapter" data-level="3.6.1" data-path="data-processing.html"><a href="data-processing.html#profanity"><i class="fa fa-check"></i><b>3.6.1</b> Profanity</a></li>
+<li class="chapter" data-level="3.6.2" data-path="data-processing.html"><a href="data-processing.html#tokenization-and-n-gram-generation"><i class="fa fa-check"></i><b>3.6.2</b> Tokenization and N-Gram Generation</a></li>
+</ul></li>
+<li class="chapter" data-level="3.7" data-path="data-processing.html"><a href="data-processing.html#build-document-feature-matrices"><i class="fa fa-check"></i><b>3.7</b> Build document-feature matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html"><i class="fa fa-check"></i><b>4</b> Exploratory Data Analysis</a><ul>
+<li class="chapter" data-level="4.1" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#unigram-analysis"><i class="fa fa-check"></i><b>4.1</b> Unigram Analysis</a></li>
+<li class="chapter" data-level="4.2" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#bigram-analysis"><i class="fa fa-check"></i><b>4.2</b> Bigram Analysis</a></li>
+<li class="chapter" data-level="4.3" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#trigram-analysis"><i class="fa fa-check"></i><b>4.3</b> Trigram Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="plans-for-prediction-algorithm-and-shiny-app.html"><a href="plans-for-prediction-algorithm-and-shiny-app.html"><i class="fa fa-check"></i><b>5</b> Plans for prediction algorithm and Shiny App</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Data Science Capstone: Milestone Report</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="data-processing" class="section level1">
+<h1><span class="header-section-number"> 3</span> Data Processing</h1>
+<div id="file-size" class="section level2">
+<h2><span class="header-section-number">3.1</span> File Size</h2>
+<p>For convenience file path is set and file size obtained to gauge the file size for three different sources. File size is converted to Megabytes.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">blogs_path &lt;-<span class="st"> &quot;~/Desktop/Data/final/en_US/en_US.blogs.txt&quot;</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">twitter_path &lt;-<span class="st"> &quot;~/Desktop/Data/final/en_US/en_US.twitter.txt&quot;</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">news_path &lt;-<span class="st"> &quot;~/Desktop/Data/final/en_US/en_US.news.txt&quot;</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">sb &lt;-<span class="st"> </span><span class="kw">file.info</span>(blogs_path)<span class="op">$</span>size<span class="op">/</span><span class="dv">1024</span><span class="op">^</span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">st &lt;-<span class="st"> </span><span class="kw">file.info</span>(twitter_path)<span class="op">$</span>size<span class="op">/</span><span class="dv">1024</span><span class="op">^</span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">sn &lt;-<span class="st"> </span><span class="kw">file.info</span>(news_path)<span class="op">$</span>size<span class="op">/</span><span class="dv">1024</span><span class="op">^</span><span class="dv">2</span></a></code></pre></div>
+</div>
+<div id="count-lines-and-words" class="section level2">
+<h2><span class="header-section-number">3.2</span> Count lines and words</h2>
+<p>Lines are read from each source and number of lines and words are counted.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">#read lines</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">blogs&lt;-<span class="kw">readLines</span>(blogs_path,<span class="dt">warn=</span><span class="ot">FALSE</span>,<span class="dt">encoding=</span><span class="st">&quot;UTF-8&quot;</span>)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">twitter&lt;-<span class="kw">readLines</span>(twitter_path,<span class="dt">warn=</span><span class="ot">FALSE</span>,<span class="dt">encoding=</span><span class="st">&quot;UTF-8&quot;</span>)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">news&lt;-<span class="kw">readLines</span>(news_path,<span class="dt">warn=</span><span class="ot">FALSE</span>,<span class="dt">encoding=</span><span class="st">&quot;UTF-8&quot;</span>)</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co"># count words per line</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">nwlblogs &lt;-<span class="st"> </span><span class="kw">stri_count_words</span>(blogs)</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">nwltwitter &lt;-<span class="st"> </span><span class="kw">stri_count_words</span>(twitter)</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">nwlnews&lt;-<span class="st"> </span><span class="kw">stri_count_words</span>(news)</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#count number of words</span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">nwblogs  &lt;-<span class="st"> </span><span class="kw">wordcount</span>(blogs, <span class="dt">sep =</span> <span class="st">&quot; &quot;</span>)</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">nwtwitter &lt;-<span class="st"> </span><span class="kw">wordcount</span>(twitter, <span class="dt">sep =</span> <span class="st">&quot; &quot;</span>)</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">nwnews  &lt;-<span class="st"> </span><span class="kw">wordcount</span>(news, <span class="dt">sep =</span> <span class="st">&quot; &quot;</span>)</a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co">#count number of lines</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">nlblogs &lt;-<span class="st"> </span><span class="kw">countLines</span>(blogs_path)</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">nltwitter &lt;-<span class="st"> </span><span class="kw">countLines</span>(twitter_path)</a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">nlnews &lt;-<span class="st"> </span><span class="kw">countLines</span>(news_path)</a></code></pre></div>
+</div>
+<div id="data-summary" class="section level2">
+<h2><span class="header-section-number">3.3</span> Data Summary</h2>
+<p>There are more than 30 million words in each source which is a great assest to create predicting algorithm. Variables AWP and MWP is mean words per line and median words per line respectively.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">data &lt;-<span class="st"> </span><span class="kw">data.table</span>(</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">        <span class="dt">Items =</span> <span class="kw">c</span>(<span class="st">&quot;Blogs&quot;</span>, <span class="st">&quot;Twitter&quot;</span>, <span class="st">&quot;News&quot;</span>),</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">        <span class="dt">FileName=</span><span class="kw">c</span>(<span class="st">&quot;en_US.blogs.txt&quot;</span>,<span class="st">&quot;en_US.twitter.txt&quot;</span>, <span class="st">&quot;en_US.news.txt &quot;</span>),</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">        <span class="dt">Size_MB =</span> <span class="kw">c</span>(sb, st, sn),</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">        <span class="dt">Words =</span> <span class="kw">c</span>(nwblogs, nwtwitter, nwnews),</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">        <span class="dt">Lines =</span> <span class="kw">c</span>(nlblogs, nltwitter, nlnews),</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">        <span class="dt">AWP =</span> <span class="kw">c</span>(<span class="kw">mean</span>(nwlblogs), <span class="kw">mean</span>(nwltwitter), <span class="kw">mean</span>(nwlnews)),</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">        <span class="dt">MWP =</span> <span class="kw">c</span>(<span class="kw">median</span>(nwlblogs), <span class="kw">median</span>(nwltwitter), <span class="kw">median</span>(nwlnews))</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">        </a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">        )</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">data</a></code></pre></div>
+<pre><code>       Items          FileName  Size_MB    Words   Lines      AWP MWP
+  1:   Blogs   en_US.blogs.txt 200.4242 37334131  899288 41.75107  28
+  2: Twitter en_US.twitter.txt 159.3641 30373543 2360148 12.75063  12
+  3:    News   en_US.news.txt  196.2775 34372530 1010242 34.40997  32</code></pre>
+</div>
+<div id="ratio" class="section level2">
+<h2><span class="header-section-number">3.4</span> Ratio</h2>
+<p>The plot for ratio of words per line was created for visualization purpose. As per the plot, ratio of words/line is the highest in the blog.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">ratio =<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">ratio=</span><span class="kw">c</span>(nwblogs<span class="op">/</span>nlblogs, nwtwitter<span class="op">/</span>nltwitter, nwnews<span class="op">/</span>nlnews), <span class="dt">media=</span><span class="kw">as.factor</span>(<span class="kw">c</span>(<span class="st">&quot;Blogs&quot;</span>, <span class="st">&quot;Twitter&quot;</span>, <span class="st">&quot;News&quot;</span>)))</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">ggplot</span>(<span class="dt">data =</span> ratio, <span class="kw">aes</span>(<span class="dt">x=</span>media, <span class="dt">y=</span> ratio, <span class="dt">fill =</span>media)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="st">        </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="st">        </span><span class="kw">labs</span>(<span class="dt">title=</span><span class="st">&quot;Ratio of Words/Line in different media sources&quot;</span>, <span class="dt">x=</span><span class="st">&quot;Media Source&quot;</span>,<span class="dt">y=</span><span class="st">&quot;Ratio of Words/Line&quot;</span>)</a></code></pre></div>
+<p><img src="Project1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="prepare-training-data" class="section level2">
+<h2><span class="header-section-number">3.5</span> Prepare Training Data</h2>
+<p>Dataset of three different sources will be sampled at 10% for training. This 10% is an arbitary number for the training data which can be modified as required by the prediction model for accuracy. All non english characters are removed from the subset of the data and then combined into a single data set for a corpus sample.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">165</span>)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">#selecting ten percent of data as training data</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">samplesize &lt;-<span class="st"> </span><span class="fl">0.1</span> </a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="co">#Sample for each source</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">blogsS &lt;-<span class="st"> </span>blogs[<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(blogs), <span class="kw">length</span>(blogs) <span class="op">*</span><span class="st"> </span>samplesize)]</a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">twitterS&lt;-<span class="st"> </span>twitter[<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(twitter), <span class="kw">length</span>(twitter) <span class="op">*</span><span class="st"> </span>samplesize)]</a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">newsS &lt;-<span class="st"> </span>news[<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(news), <span class="kw">length</span>(news) <span class="op">*</span><span class="st"> </span>samplesize)]</a>
+<a class="sourceLine" id="cb8-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="co"># remove all non-English characters from the sampled data</span></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">blogsS &lt;-<span class="st"> </span><span class="kw">iconv</span>(blogsS, <span class="st">&quot;latin1&quot;</span>, <span class="st">&quot;ASCII&quot;</span>, <span class="dt">sub =</span> <span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">newsS  &lt;-<span class="st"> </span><span class="kw">iconv</span>(newsS , <span class="st">&quot;latin1&quot;</span>, <span class="st">&quot;ASCII&quot;</span>, <span class="dt">sub =</span> <span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb8-13" data-line-number="13">twitterS &lt;-<span class="st"> </span><span class="kw">iconv</span>(twitterS, <span class="st">&quot;latin1&quot;</span>, <span class="st">&quot;ASCII&quot;</span>, <span class="dt">sub =</span> <span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb8-14" data-line-number="14">Sample &lt;-<span class="st"> </span><span class="kw">c</span>(blogsS, twitterS, newsS)</a></code></pre></div>
+</div>
+<div id="data-cleaning" class="section level2">
+<h2><span class="header-section-number">3.6</span> Data Cleaning</h2>
+<div id="profanity" class="section level3">
+<h3><span class="header-section-number">3.6.1</span> Profanity</h3>
+<p>Obscene languages should be removed. The dataset of profane words can be obtained from <a href="https://www.cs.cmu.edu/~biglou/resources/bad-words.txt">School of Computer Science, Carnegie Mellon University</a> which has more than 1,300 blasphemous words.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(<span class="st">&quot;./swearWords.txt&quot;</span>)){</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">        <span class="kw">download.file</span>(<span class="dt">url =</span> <span class="st">&quot;https://www.cs.cmu.edu/~biglou/resources/bad-words.txt&quot;</span>,</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">                      <span class="dt">destfile=</span> <span class="st">&quot;./swearWords.txt&quot;</span>,</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">                      <span class="dt">method =</span> <span class="st">&quot;curl&quot;</span>)</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">}</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">profanity &lt;-<span class="st"> </span><span class="kw">readLines</span>(<span class="st">&quot;./swearWords.txt&quot;</span>,<span class="dt">warn=</span><span class="ot">FALSE</span>, <span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</a></code></pre></div>
+</div>
+<div id="tokenization-and-n-gram-generation" class="section level3">
+<h3><span class="header-section-number">3.6.2</span> Tokenization and N-Gram Generation</h3>
+<p>The following transformations is made in the sample dataset.
+* Remove numbers
+* Remove punctuation marks
+* Remove URL
+* Remove separators
+* Remove symbols
+* Remove Twitter handles
+* Applied Stopwords
+* Converted to lower case
+* <a href="https://en.wikipedia.org/wiki/Stemming">Stemming</a></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co"># Build tokens using &quot;quanteda&quot; package</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">t &lt;-<span class="st"> </span><span class="kw">tokens</span>(Sample,</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">               <span class="dt">what=</span><span class="st">&quot;word&quot;</span>,</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">               <span class="dt">remove_numbers =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">               <span class="dt">remove_punct =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">               <span class="dt">remove_url =</span><span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">               <span class="dt">remove_separators =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">               <span class="dt">remove_symbols =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">               <span class="dt">remove_twitter =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb10-10" data-line-number="10">               <span class="dt">verbose =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb10-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="co"># Remove stopwords </span></a>
+<a class="sourceLine" id="cb10-13" data-line-number="13">t &lt;-<span class="st"> </span><span class="kw">tokens_replace</span>(t,<span class="dt">pattern =</span><span class="kw">stopwords</span>(<span class="st">&quot;english&quot;</span>),<span class="dt">replacement=</span><span class="kw">stopwords</span>(<span class="st">&quot;english&quot;</span>)) </a>
+<a class="sourceLine" id="cb10-14" data-line-number="14"><span class="co">#Set lower case for every word</span></a>
+<a class="sourceLine" id="cb10-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb10-16" data-line-number="16">t &lt;-<span class="st"> </span><span class="kw">tokens_tolower</span>(t)  </a>
+<a class="sourceLine" id="cb10-17" data-line-number="17"><span class="co">#Apply stemmer to words</span></a>
+<a class="sourceLine" id="cb10-18" data-line-number="18">t &lt;-<span class="st"> </span><span class="kw">tokens_wordstem</span>(t, <span class="dt">language =</span> <span class="st">&quot;english&quot;</span>) </a>
+<a class="sourceLine" id="cb10-19" data-line-number="19">t<span class="fl">.1</span>gram &lt;-<span class="st"> </span><span class="kw">tokens_ngrams</span>(t, <span class="dt">n =</span> <span class="dv">1</span>, <span class="dt">concatenator =</span> <span class="st">&quot; &quot;</span>)</a>
+<a class="sourceLine" id="cb10-20" data-line-number="20">t<span class="fl">.2</span>gram &lt;-<span class="st"> </span><span class="kw">tokens_ngrams</span>(t, <span class="dt">n =</span> <span class="dv">2</span>, <span class="dt">concatenator =</span> <span class="st">&quot; &quot;</span>)</a>
+<a class="sourceLine" id="cb10-21" data-line-number="21">t<span class="fl">.3</span>gram &lt;-<span class="st"> </span><span class="kw">tokens_ngrams</span>(t, <span class="dt">n =</span> <span class="dv">3</span>, <span class="dt">concatenator =</span> <span class="st">&quot; &quot;</span>)</a></code></pre></div>
+</div>
+</div>
+<div id="build-document-feature-matrices" class="section level2">
+<h2><span class="header-section-number">3.7</span> Build document-feature matrices</h2>
+<p>The predictive model for the Shiny application will handle uniqrams, bigrams, and trigrams. The <code>quanteda</code> package is used to construct functions construct matrices of uniqrams, bigrams, and trigrams from the tokenized data.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">unigram &lt;-<span class="st"> </span><span class="kw">dfm</span>(t<span class="fl">.1</span>gram, <span class="dt">verbose =</span> <span class="ot">FALSE</span>,<span class="dt">remove =</span> profanity )</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">bigram &lt;-<span class="st"> </span><span class="kw">dfm</span>(t<span class="fl">.2</span>gram, <span class="dt">verbose =</span> <span class="ot">FALSE</span>, <span class="dt">remove =</span> profanity)</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">trigram &lt;-<span class="st"> </span><span class="kw">dfm</span>(t<span class="fl">.3</span>gram, <span class="dt">verbose =</span> <span class="ot">FALSE</span>, <span class="dt">remove =</span> profanity)</a></code></pre></div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="load-packages-and-data.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="exploratory-data-analysis.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Project1.pdf", "Project1.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

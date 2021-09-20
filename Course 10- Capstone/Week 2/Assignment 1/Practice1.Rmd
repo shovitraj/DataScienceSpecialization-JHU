@@ -1,0 +1,119 @@
+---
+title: "Practice1"
+author: "Shovit Bhari"
+date: "`r Sys.Date()"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidytext)
+library(ggplot2)
+library(tidyverse)
+library(stringr)
+library(R.utils)
+library(ngram)
+library(dplyr)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+en_blogs <- read_lines("./Data/final/en_US/en_US.blogs.txt")
+en_twitter <- read_lines("./Data/final/en_US/en_US.twitter.txt")
+en_news <- read_lines("./Data/final/en_US/en_US.news.txt")
+
+combined_data <- list(en_blogs, en_news, en_twitter)
+```
+
+```{r}
+nlinesBlogs <- countLines("./Data/final/en_US/en_US.blogs.txt")
+nlinesTwitter <- countLines("./Data/final/en_US/en_US.twitter.txt")
+nlinesNews <- countLines("./Data/final/en_US/en_US.news.txt")
+
+nwordsBlogs  <- wordcount(en_blogs, sep = " ")
+nwordsTwitter <- wordcount(en_twitter, sep = " ")
+nwordsNews  <- wordcount(en_news, sep = " ")
+
+toplot <- tibble(counts = c(nwordsBlogs, nwordsTwitter, nwordsNews, nlinesBlogs, nlinesTwitter, nlinesNews),
+    class = as.factor(c(rep("words",3), rep("lines", 3))), 
+    medium = as.factor(c(rep(c("blogs", "twitter", "news"),2 ))))
+
+toplot$names <- paste(toplot$class, toplot$medium)
+toplot
+```
+
+```{r}
+ggplot(data = toplot, aes( y = counts, x = class, fill = medium)) + 
+    geom_bar(stat = "identity") + 
+    coord_flip() + 
+    facet_grid(medium ~ ., scales = "free") + 
+    ggtitle("label")
+```
+
+```{r}
+ratio = data_frame(ratio = c(nwordsBlogs/ nlinesBlogs, nwordsNews/nlinesNews, nwordsTwitter/nlinesTwitter), media = as.factor(c("Blogs","News","Twitter")))
+ratio
+ggplot(data = ratio, aes(x=media, y= ratio, fill =media)) + geom_bar(stat="identity") + ggtitle("label") + ylab("ratio of words/ lines")
+```
+
+```{r}
+start.time <- Sys.time()
+variables <- list(en_blogs, en_twitter, en_news)
+variables_names <- c("en_blogs", "en_twitter", "en_news")
+
+for(i in 1:length(variables)){
+    toProcess <- variables[[i]]
+    toProcessName <- variables_names[i]
+    toProcess.tb <- tibble(line = 1:length(toProcess), text = toProcess)
+    toProcess.tb$text <- gsub("[^a-zA-Z0-9 ]", " ", toProcess.tb$text)
+    toProcess.tb$text <- str_squish(toProcess.tb$text)
+    toProcess.tb$text <- str_to_lower(toProcess.tb$text)
+    assign(paste0(toProcessName,".tb"), toProcess.tb)
+}
+
+head(en_blogs.tb$text,2)
+head(en_news.tb$text,2)
+head(en_twitter.tb$text,2)
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
+```
+
+```{r}
+en_blogs.tb.sub <-sample_frac(en_blogs.tb, 0.01)
+
+en_blogs.tb.sub %>% unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
+    count(bigram, sort = TRUE) %>% 
+    mutate(bigram = reorder(bigram, n)) %>%
+    filter(n > 10) %>% 
+    top_n(10) %>%
+    ggplot(aes(bigram, n)) +
+    geom_col() +
+    xlab(NULL) +
+    coord_flip() + 
+    ggtitle("top10 words with stop words in en_blogs.tb.sub")
+
+stringr::str_replace_all(string = en_blogs.tb.sub,  pattern = stopwords::stopwords(source = "smart"), replacement = '')
+```
+
+```{r}
+en_blogs.tb.sub <-sample_frac(en_blogs.tb, 0.01)
+
+plot4 <- en_blogs.tb.sub %>% unnest_tokens(bigram, text, token = "ngrams", n = 3) %>% 
+    count(bigram, sort = TRUE) %>% 
+    mutate(bigram = reorder(bigram, n)) %>%
+    drop_na() %>%
+    filter(n > 10) %>% 
+    top_n(10) %>%
+    ggplot(aes(bigram, n)) +
+    geom_col() +
+    xlab(NULL) +
+    coord_flip() + 
+    ggtitle("top10 3-gram with stop words in en_blogs.tb.sub")
+```
+
+
+
+
+
+
+

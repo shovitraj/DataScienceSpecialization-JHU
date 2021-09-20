@@ -1,0 +1,156 @@
+---
+title: "Practice4"
+author: "Shovit Bhari"
+date: "`r Sys.Date()'"
+output: html_document
+---
+
+```{r setup, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# load required packages
+require(tm)
+require(stringi)
+require(data.table)
+require(quanteda)
+require(ggplot2)
+require(wordcloud)
+require(tidyverse)
+```
+
+```{r}
+rm(list=ls())
+if(!file.exists("./Data")){
+  dir.create("./Data")
+}
+Url <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
+
+if(!file.exists("./Data/Coursera-SwiftKey.zip")){
+  download.file(Url,destfile="./Data/Coursera-SwiftKey.zip",mode = "wb")
+}
+
+if(!file.exists("./Data/final")){
+  unzip(zipfile="./Data/Coursera-SwiftKey.zip",exdir="./Data")
+}
+```
+
+```{r}
+twitter_path <- "./Data/final/en_US/en_US.twitter.txt"
+blogs_path <- "./Data/final/en_US/en_US.blogs.txt"
+news_path <- "./Data/final/en_US/en_US.news.txt"
+```
+
+```{r}
+twitter<-readLines(twitter_path,warn=FALSE,encoding="UTF-8")
+blogs<-readLines(blogs_path,warn=FALSE,encoding="UTF-8")
+news<-readLines(news_path,warn=FALSE,encoding="UTF-8")
+```
+
+```{r}
+# assign sample size
+sampleSize = 0.01
+
+# file size
+size_blogs <- file.info(twitter_path)$size/1024^2
+size_news <- file.info(blogs_path)$size/1024^2
+
+size_twitter <- file.info(news_path)$size/1024^2
+fileSizeMB <- round(c(size_blogs, size_news, size_twitter),2)
+fileSizeMB
+```
+
+```{r}
+# num lines per file
+numLines <- sapply(list(blogs, news, twitter), length)
+
+# num characters per file
+numChars <- sapply(list(nchar(blogs), nchar(news), nchar(twitter)), sum)
+
+# num words per file
+numWords <- sapply(list(blogs, news, twitter), stri_stats_latex)[4,]
+
+# words per line
+wpl <- lapply(list(blogs, news, twitter), function(x) stri_count_words(x))
+
+# words per line summary
+wplSummary = sapply(list(blogs, news, twitter),
+             function(x) summary(stri_count_words(x))[c('Min.', 'Mean', 'Max.')])
+rownames(wplSummary) = c('WPL.Min', 'WPL.Mean', 'WPL.Max')
+
+summary <- data.frame(
+    File = c("en_US.blogs.txt", "en_US.news.txt", "en_US.twitter.txt"),
+    FileSize = paste(fileSizeMB, " MB"),
+    Lines = numLines,
+    Characters = numChars,
+    Words = numWords,
+    t(rbind(round(wplSummary)))
+)
+
+```
+
+
+# Exploring the data
+```{r}
+# create a corpus using a 1% sample of the data
+set.seed(37)
+data.01 <- c(sample(blogs, length(blogs) * 0.01),
+             sample(news, length(news) * 0.01),
+             sample(twitter, length(twitter) * 0.01))
+
+# remove original objects to free up memory
+rm(blogs)
+rm(news)
+rm(twitter)
+
+# exploring the data
+q.corpus <- quanteda::corpus(data.01)
+```
+
+```{r}
+# get N-grams using quanteda::dfm
+dfm.1gram <- dfm(q.corpus, removePunct = TRUE, concatenator = " ")
+dfm.2gram <- dfm(q.corpus, removePunct = TRUE,  concatenator = " ", ngrams = 2)
+dfm.3gram <- dfm(q.corpus, removePunct = TRUE,  concatenator = " ", ngrams = 3)
+```
+
+
+```{r}
+# plot a word-cloud of the unigram (1-gram)
+textplot_wordcloud(dfm.1gram, max.words = 100, random.order = FALSE,
+                   rot.per =.2, scale = c(8, 1),
+                   colors = RColorBrewer::brewer.pal(8,"Dark2"))
+```
+
+
+```{r}
+# get most common N-grams (ranked values)
+top.1gram <- topfeatures(dfm.1gram, 20)
+top.2gram <- topfeatures(dfm.2gram, 20)
+top.3gram <- topfeatures(dfm.3gram, 20)
+
+# top.1gram
+# top.2gram
+# top.3gram
+
+# plot
+barplot(sort(top.1gram), xlab = "count", main = "top-20 1-gram", cex.names = 0.7, horiz=TRUE, las =1)
+```
+
+```{r}
+
+
+sort(top.1gram, decreasing = TRUE)
+
+ggplot(data=top.1gram, aes(x=count))
+```
+
+```{r}
+barplot(sort(top.2gram), xlab = "count", main = "top-20 2-gram", cex.names = 0.7, horiz=TRUE, las =1)
+```
+
+```{r}
+barplot(sort(top.3gram), xlab = "count", main = "top-20 3-gram", cex.names = 0.7, 
+        horiz=TRUE, las =1, mgp = c(3, 0, 1))
+```

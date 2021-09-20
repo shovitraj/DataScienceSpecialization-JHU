@@ -1,0 +1,30 @@
+---
+title: "Analysis of Median Household Income"
+author: "Shovit Bhari"
+date: "6/17/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The [chart](https://money.cnn.com/gallery/news/economy/2017/01/06/obama-economy-10-charts-final/4.html) published on January 6, 2017 is misleading. The distortion factor here is that y-axis starts at $52k$. I have plotted the same data where the y-axis starts at $0$. This is the first assignment of Applied Plotting, Charting and Data Representation in Python. I have not yet learned how to plot barchart in Python. So, I used R to make this barplot. 
+```{r}
+income<- c(57.4, 55.5, 54.9, 53.6, 52.8, 52.7, 52.9, 53.7, 56.6)
+year<- c(2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015)
+value <- paste("$", income, "K")
+```
+
+```{r}
+bar <- barplot(income,
+        main="Median House Hold Income",
+        xlab = "Year",
+        ylab="Median Income (1000's of USD)",
+        col= "lightblue",
+        border=FALSE, 
+        names.arg = year,
+        ylim=c(0,60)
+        )
+text(x=bar,y=income+2, labels=value, cex=0.8)
+```

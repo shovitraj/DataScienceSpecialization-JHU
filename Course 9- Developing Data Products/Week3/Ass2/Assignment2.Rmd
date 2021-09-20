@@ -1,0 +1,139 @@
+
+---
+title: "Modified Atwood's Machine and Newton's Second Law"
+author: "Shovit Bhari"
+date: "6/9/2020"
+output: 
+   ioslides_presentation:
+     widescreen : true
+     smaller : true
+     transition : slower
+     incremental: true
+         
+         
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Atwood Machine 
+**Diagram of an experiment**  
+![Experiment](Diagram.png){.class width=60% height=20%}
+
+**Free Body Diagram**   
+![Free Body Diagram](FBD.png){.class width=25% height=25%}
+
+## Instructions
+
+- A hanging mass is attached to a glider with a string. 
+- We consider it to be a frictionless surface
+- We neglect the mass of the pulley and the string
+- Choose positive direction for each mass
+- For a glider left positive.
+- For a hanging mass up positive. 
+- Draw Free Body Diagrams 
+- Apply Newton's laws
+
+ 
+```{r , echo=FALSE, message=FALSE, warning=FALSE}
+library(plotly)
+t <- seq(0,0.55, by=0.05)
+x<- c(0.0, 0.01,0.025,0.045, 0.07, 0.105, 0.145, 0.19, 0.24, 0.3, 0.36, 0.43)
+vx <- c(NA,0.25, 0.35,0.45,0.6, 0.75, 0.85, 0.95, 1.1, 1.2, 1.3,NA)
+y <- c(0.425,0.42,0.41, 0.39, 0.365, 0.34, 0.3, 0.265, 0.215, 0.16, 0.1, 0.04)
+vy<- c(NA,-0.15, -0.3, -0.45, -0.5, -0.65, -0.75, -0.85, -1.05, -1.15, -1.2, NA)
+
+```
+
+## Data
+
+```{r, echo=FALSE, comment=" "}
+lab5 <- data.frame(t,x,y,vx, vy)
+lab5
+```
+
+## Variables
+t: time      
+x: position of the horizontal mass         
+y: position of the vertical mass      
+vx: velocity of the horizontal mass      
+vy: velocity of the hanging mass       
+
+Horizontal Mass: $$ 400 \pm 0.1 g $$    
+Hanging Mass: $$ 100 \pm 0.1 g $$
+
+
+## Displacement of the horizontal mass          
+```{r ,echo=FALSE}
+x1 <- ggplot(lab5, aes(t, x)) +
+         geom_point(col="red") +
+         theme(plot.title = element_text(hjust=0.5)) +
+         labs(title = "Displacement of the horizontal mass", x="Time", y = "Position")+
+         theme(plot.title = element_text(color="blue", size=14, face="bold"))
+
+fig1 <- ggplotly(x1)
+fig1
+```
+
+
+## Velocity of the horizontal mass     
+
+```{r x,echo=FALSE,eval=FALSE,warning=FALSE, comment=" "}
+xt <- lm(vx~t, lab5)
+summary(xt)$coef
+```
+
+```{r vx,echo=FALSE, warning=FALSE}
+v1<- ggplot(lab5, aes(t, vx)) +
+        geom_smooth(method='lm', formula=y~x, se=FALSE)+
+        geom_point(col="red") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        labs(title = "Velocity of the horizontal mass", x="Time", y = "Velocity")+
+        theme(plot.title = element_text(color="blue", size=14, face="bold"))
+fig2 <- ggplotly(v1)
+fig2
+```
+
+## Displacement of the hanging mass    
+
+```{r y1,echo=FALSE}
+y1 <- ggplot(lab5, aes(t, y)) +
+         geom_point(col="green") +
+         theme(plot.title = element_text(hjust=0.5)) +
+         labs(title = "Displacement of the hanging mass", x="Time", y = "Position")+
+         theme(plot.title = element_text(color="blue", size=14, face="bold"))
+
+fig3 <- ggplotly(y1)
+fig3
+```
+
+## Velocity of the hanging mass    
+
+
+```{r y,echo=FALSE, eval=FALSE, warning=FALSE, comment=" "}
+yt <- lm(vy~t, lab5)
+summary(yt)$coef
+```
+```{r vy,echo=FALSE, warning=FALSE}
+v2<- ggplot(lab5, aes(t, vy)) +
+        geom_smooth(method='lm', formula=y~x, se=FALSE)+
+        geom_point(col="green") +
+        theme(plot.title = element_text(hjust=0.5)) +
+        labs(title = "Velocity of the hanging mass", x="Time", y = "Velocity")+
+        theme(plot.title = element_text(color="blue", size=14, face="bold"))
+fig4 <- ggplotly(v2)
+fig4
+```
+
+## Results        
+
+Initial velocity of the horizontal mass  
+$$ v_x = 0.120 \pm 0.013 \frac{m}{s} $$
+Acceleration of the horizontal mass
+$$ a_x = 2.400 \pm 0.043 \frac{m}{s^2} $$
+
+Initial velocity of the hanging mass  
+$$ v_y = -0.053 \pm 0.023 \frac{m}{s} $$
+Acceleration of the hanging mass
+$$ a_y = -2.397 \pm 0.074 \frac{m}{s^2} $$

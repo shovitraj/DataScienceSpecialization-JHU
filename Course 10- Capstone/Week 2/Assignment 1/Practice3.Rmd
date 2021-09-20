@@ -1,0 +1,190 @@
+---
+title: "Practice2"
+author: "Shovit Bhari"
+date: "`r Sys.Date() `"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidytext)
+library(ggplot2)
+library(tidyverse)
+library(stringr)
+library(R.utils)
+library(ngram)
+library(dplyr)
+library(ngram)
+library(gridExtra)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+if(!file.exists("./Data")){
+  dir.create("./Data")
+}
+Url <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
+
+if(!file.exists("./Data/Coursera-SwiftKey.zip")){
+  download.file(Url,destfile="./Data/Coursera-SwiftKey.zip",mode = "wb")
+}
+
+if(!file.exists("./Data/final")){
+  unzip(zipfile="./Data/Coursera-SwiftKey.zip",exdir="./Data")
+}
+```
+
+```{r}
+setwd("./Data/final/en_US")
+size_blogs <- file.info("en_US.blogs.txt")$size/1024^2
+size_news <- file.info("en_US.news.txt")$size/1024^2
+
+size_twitter <- file.info("en_US.twitter.txt")$size/1024^2
+#size_blogs
+```
+
+```{r}
+setwd("./Data/final/en_US")
+
+twitter<-readLines("en_US.twitter.txt",warn=FALSE,encoding="UTF-8")
+blogs<-readLines("en_US.blogs.txt",warn=FALSE,encoding="UTF-8")
+news<-readLines("en_US.news.txt",warn=FALSE,encoding="UTF-8")
+```
+
+## Line Count
+```{r}
+nlblogs <- countLines("en_US/en_US.blogs.txt")
+nltwitter <- countLines("en_US/en_US.twitter.txt")
+nlnews <- countLines("en_US/en_US.news.txt")
+```
+
+## Word Count
+```{r}
+nwblogs  <- wordcount(blogs, sep = " ")
+nwtwitter <- wordcount(twitter, sep = " ")
+nwnews  <- wordcount(news, sep = " ")
+```
+
+
+## Char Count
+```{r}
+nctwitter<-sum(nchar(twitter))
+ncblogs<-sum(nchar(blogs))
+ncnews<-sum(nchar(news))
+```
+
+##Data Frame
+```{r}
+data <- data.frame("File Name" = c("twitter", "blogs", "news"),
+           "Num of lines" = c(nltwitter,nlblogs, nlnews),
+          "Num of words" = c(nwblogs, nwnews, nwtwitter),
+         "Num of character"=c(ncblogs,ncnews,nctwitter),
+    
+      "File Size" = c(size_blogs, size_news, size_twitter))
+data
+```
+```{r}
+istat <- tibble(counts = c(nwblogs, nwtwitter, nwnews, nltwitter,nlblogs, nlnews),
+    class = as.factor(c(rep("words",3), rep("lines", 3))), 
+    medium = as.factor(c(rep(c("blogs", "twitter", "news"),2 ))))
+
+istat$names <- paste(istat$class, istat$medium)
+istat
+ggplot(data = istat, aes( y = counts, x = class, fill = medium)) + 
+    geom_bar(stat = "identity") + 
+    coord_flip() + 
+    facet_grid(medium~., scales = "free") + 
+    labs(title="Label",x="Class", y="Count")+
+    coord_flip()
+```
+
+```{r}
+options(mc.cores=4)
+blogs_bi<-tibble(line=1:nlblogs, text=blogs) %>%
+        unnest_tokens(bigram, text, token="ngrams", n=2) %>%
+        count(bigram, sort=TRUE) %>%
+        mutate(bigram = reorder(bigram, n)) %>%
+        filter(n>10) %>%
+        top_n(10) 
+twitter_bi<-tibble(line=1:nltwitter, text=twitter) %>%
+        unnest_tokens(bigram, text, token="ngrams", n=2) %>%
+        count(bigram, sort=TRUE) %>%
+        mutate(bigram = reorder(bigram, n)) %>%
+        filter(n>10) %>%
+        top_n(10) 
+
+news_bi<-tibble(line=1:nlnews, text=news) %>%
+        unnest_tokens(bigram, text, token="ngrams", n=2) %>%
+        count(bigram, sort=TRUE) %>%
+        mutate(bigram = reorder(bigram, n)) %>%
+        filter(n>10) %>%
+        top_n(10) 
+```
+
+
+```{r}
+blogs_tri<-tibble(line=1:nlblogs, text=blogs) %>%
+        unnest_tokens(bigram, text, token="ngrams", n=3) %>%
+        count(bigram, sort=TRUE) %>%
+        mutate(bigram = reorder(bigram, n)) %>%
+        filter(n>10) %>%
+        top_n(10) 
+twitter_tri<-tibble(line=1:nltwitter, text=twitter) %>%
+        unnest_tokens(bigram, text, token="ngrams", n=3) %>%
+        count(bigram, sort=TRUE) %>%
+        mutate(bigram = reorder(bigram, n)) %>%
+        filter(n>10) %>%
+        top_n(10) 
+
+news_tri<-tibble(line=1:nlnews, text=news) %>%
+        unnest_tokens(bigram, text, token="ngrams", n=3) %>%
+        count(bigram, sort=TRUE) %>%
+        mutate(bigram = reorder(bigram, n)) %>%
+        filter(n>10) %>%
+        top_n(10) 
+```
+
+
+```{r}
+blogs_bi
+twitter_bi
+news_bi
+```
+
+```{r}
+g1<- ggplot(data= blogs_bi,aes(bigram,n)) +
+        geom_bar(stat='identity', fill='cornflowerblue')+
+        labs(y="Count", x="Blogs Bigram") + 
+        coord_flip()
+g2<- ggplot(data= twitter_bi,aes(bigram,n)) +
+        geom_bar(stat='identity', fill='coral')+
+        labs(y="Count", x="Twitter Bigram") + 
+        coord_flip()
+g3<- ggplot(data= news_bi,aes(bigram,n)) +
+        geom_bar(stat='identity', fill='darkslategray1')+
+        labs(y="Count", x="News Bigram") + 
+        coord_flip()
+grid.arrange(g1,g2,g3, top="Bigram")
+```
+```{r}
+blogs_tri
+twitter_tri
+news_tri
+```
+
+```{r}
+g4<- ggplot(data= blogs_tri,aes(bigram,n)) +
+        geom_bar(stat='identity', fill='cornflowerblue')+
+        labs(y="Count", x="Blogs 3-gram") + 
+        coord_flip()
+g5<- ggplot(data= twitter_tri,aes(bigram,n)) +
+        geom_bar(stat='identity', fill='coral')+
+        labs(y="Count", x="Twitter 3-gram") + 
+        coord_flip()
+g6<- ggplot(data= news_tri,aes(bigram,n)) +
+        geom_bar(stat='identity', fill='darkslategray1')+
+        labs(y="Count", x="News 3-gram") + 
+        coord_flip()
+grid.arrange(g4,g5,g6, top="3-gram")
+
+```

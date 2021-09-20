@@ -1,0 +1,12 @@
+name: LifeExp
+title: LifeExp
+username:
+account: shovitraj
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2557555
+bundleId: 3377521
+url: https://shovitraj.shinyapps.io/LifeExp/
+when: 1594406195.53465
+asMultiple: FALSE
+asStatic: FALSE
